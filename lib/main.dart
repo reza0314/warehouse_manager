@@ -1,22 +1,36 @@
+// ignore_for_file: prefer_final_fields, unused_field
+
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import './models/data_model.dart';
 import './widgets/add_new_data.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+  runApp(MyApp(
+    cam: firstCamera,
+  ));
 }
 
 // ignore: must_be_immutable
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final CameraDescription cam;
+  const MyApp({super.key, required this.cam});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  late CameraController _camController =
+      CameraController(widget.cam, ResolutionPreset.medium, enableAudio: false);
+
+  late Future<void> _initializeControllerFuture = _camController.initialize();
+
   final List<DataModel> _data = [
     DataModel(
       code: "1",
@@ -91,6 +105,12 @@ class _MyAppState extends State<MyApp> {
   // }
 
   @override
+  void dispose() {
+    _camController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Warehouse App',
@@ -107,16 +127,12 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       home: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: const Icon(Icons.add),
-        ),
         appBar: AppBar(
           title: const Text("Warehouse"),
           actions: [
             IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.download),
+              onPressed: () => _startAddNew(context, false, "1"),
+              icon: const Icon(Icons.add),
             ),
           ],
         ),
@@ -177,6 +193,10 @@ class _MyAppState extends State<MyApp> {
               ),
             );
           },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _startAddNew(context, false, "1"),
+          child: const Icon(Icons.add),
         ),
       ),
     );

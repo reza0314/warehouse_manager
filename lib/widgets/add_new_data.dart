@@ -1,4 +1,8 @@
 // ignore_for_file: prefer_const_constructors, unused_field
+import 'dart:async';
+import 'dart:io';
+
+import 'package:camera/camera.dart';
 
 import 'package:flutter/material.dart';
 
@@ -33,6 +37,12 @@ class _NewDataState extends State<NewDataPage> {
             controller: _weightTextFieldController,
             decoration: const InputDecoration(helperText: "weight"),
           ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.camera_alt_rounded,
+            ),
+          ),
           TextButton(
             onPressed: () {
               if (widget.modify) {
@@ -47,7 +57,8 @@ class _NewDataState extends State<NewDataPage> {
               }
             },
             child: Text(widget.modify ? "modify" : "add"),
-          )
+          ),
+          
         ],
       ),
     );
