@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import './models/data_model.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  List<DataModel> data = [
+// ignore: must_be_immutable
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final List<DataModel> _data = [
     DataModel(
       code: "1",
       time: DateTime.now(),
@@ -25,13 +34,43 @@ class MyApp extends StatelessWidget {
     ),
   ];
 
-  MyApp({super.key});
+  void _deleteData(String id) {
+    _data.removeWhere((element) => element.code == id);
+    setState(() {});
+  }
+
+  void _startAddNew(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (context) {
+        return GestureDetector(
+          onTap: () {},
+          child: ,
+        );
+      },
+    );
+  }
+  // void addNewData(void){
+  //   setState(() {
+
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Warehouse App',
-      theme: ThemeData(textTheme: TextTheme(bodyText1: TextStyle(),),),
+      theme: ThemeData(
+        textTheme: const TextTheme(
+            bodyText1: TextStyle(
+              fontFamily: 'Raleway',
+              fontSize: 20,
+            ),
+            bodyText2: TextStyle(
+              fontFamily: 'RobotoCondensed',
+              fontSize: 20,
+            )),
+      ),
       home: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
@@ -47,7 +86,7 @@ class MyApp extends StatelessWidget {
           ],
         ),
         body: ListView.builder(
-          itemCount: data.length,
+          itemCount: _data.length,
           itemBuilder: (BuildContext context, int index) {
             return Card(
               child: Row(
@@ -55,22 +94,38 @@ class MyApp extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      const Text("Code"),
-                      Text(data[index].code),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const Text("weight"),
                       Text(
-                        "${data[index].weight} Kg",
+                        "Code",
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        _data[index].code,
+                        style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ],
                   ),
                   Column(
                     children: [
-                      const Text("date"),
-                      Text(data[index].code),
+                      Text(
+                        "weight",
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        "${_data[index].weight} Kg",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        "date",
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        DateFormat.yMd().format(_data[index].time),
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
                     ],
                   ),
                   IconButton(
@@ -78,7 +133,7 @@ class MyApp extends StatelessWidget {
                     icon: const Icon(Icons.edit),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => _deleteData(_data[index].code),
                     icon: const Icon(Icons.delete),
                   )
                 ],
