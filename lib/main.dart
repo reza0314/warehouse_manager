@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import './models/data_model.dart';
+import './widgets/add_new_data.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,31 +22,64 @@ class _MyAppState extends State<MyApp> {
       code: "1",
       time: DateTime.now(),
       weight: 12.3,
+      id: "${1}${DateTime.now()}${12.3}",
     ),
     DataModel(
       code: "2",
       time: DateTime.now(),
       weight: 14.0,
+      id: "${2}${DateTime.now()}${14.0}",
     ),
     DataModel(
       code: "3",
       time: DateTime.now(),
+      id: "${3}${DateTime.now()}${18.0}",
       weight: 18.0,
     ),
   ];
 
   void _deleteData(String id) {
-    _data.removeWhere((element) => element.code == id);
+    _data.removeWhere((element) => element.id == id);
     setState(() {});
   }
 
-  void _startAddNew(BuildContext ctx) {
+  void addNewData(String weight) {
+    // ignore: unnecessary_null_comparison
+    if (widget == null) return;
+
+    double weightNumber = double.parse(weight);
+    DataModel newData = DataModel(
+      code: "${_data.length + 1}",
+      time: DateTime.now(),
+      weight: weightNumber,
+      id: "${_data.length + 1}${DateTime.now()}$weightNumber",
+    );
+    setState(() {
+      _data.add(newData);
+    });
+  }
+
+  void modifyData(String id, String weight) {
+    double weightNumber = double.parse(weight);
+    for (int i = 0; i < _data.length; i++) {
+      if (_data[i].id == id) {
+        setState(() {
+          _data[i].weight = weightNumber;
+        });
+        break;
+      }
+    }
+  }
+
+  void _startAddNew(BuildContext ctx, bool modify, String id) {
     showModalBottomSheet(
       context: ctx,
-      builder: (context) {
-        return GestureDetector(
-          onTap: () {},
-          child: ,
+      builder: (_) {
+        return NewDataPage(
+          modify: modify,
+          addNewData: addNewData,
+          modifyData: modifyData,
+          id: id,
         );
       },
     );
@@ -62,14 +96,15 @@ class _MyAppState extends State<MyApp> {
       title: 'Warehouse App',
       theme: ThemeData(
         textTheme: const TextTheme(
-            bodyText1: TextStyle(
-              fontFamily: 'Raleway',
-              fontSize: 20,
-            ),
-            bodyText2: TextStyle(
-              fontFamily: 'RobotoCondensed',
-              fontSize: 20,
-            )),
+          bodyText1: TextStyle(
+            fontFamily: 'Raleway',
+            fontSize: 20,
+          ),
+          bodyText2: TextStyle(
+            fontFamily: 'RobotoCondensed',
+            fontSize: 20,
+          ),
+        ),
       ),
       home: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -92,6 +127,7 @@ class _MyAppState extends State<MyApp> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  Text("${index + 1}"),
                   Column(
                     children: [
                       Text(
@@ -129,11 +165,12 @@ class _MyAppState extends State<MyApp> {
                     ],
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () =>
+                        _startAddNew(context, true, _data[index].id),
                     icon: const Icon(Icons.edit),
                   ),
                   IconButton(
-                    onPressed: () => _deleteData(_data[index].code),
+                    onPressed: () => _deleteData(_data[index].id),
                     icon: const Icon(Icons.delete),
                   )
                 ],

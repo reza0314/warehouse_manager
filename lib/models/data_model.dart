@@ -1,10 +1,12 @@
 class DataModel {
   final String code;
-  final double weight;
+  double weight;
   final DateTime time;
+  final String id;
   DataModel({
     required this.code,
     required this.time,
     required this.weight,
+    required this.id,
   });
 }
