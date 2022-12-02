@@ -2,10 +2,10 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import './models/data_model.dart';
-import './widgets/add_new_data.dart';
+import './screens/home_page_screen.dart';
+import './screens/second_page_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +31,22 @@ class _MyAppState extends State<MyApp> {
 
   late Future<void> _initializeControllerFuture = _camController.initialize();
 
+  void addNewData(String weight) {
+    // ignore: unnecessary_null_comparison
+    if (widget == null) return;
+
+    double weightNumber = double.parse(weight);
+    DataModel newData = DataModel(
+      code: "${_data.length + 1}",
+      time: DateTime.now(),
+      weight: weightNumber,
+      id: "${_data.length + 1}${DateTime.now()}$weightNumber",
+    );
+    setState(() {
+      _data.add(newData);
+    });
+  }
+
   final List<DataModel> _data = [
     DataModel(
       code: "1",
@@ -52,52 +68,6 @@ class _MyAppState extends State<MyApp> {
     ),
   ];
 
-  void _deleteData(String id) {
-    _data.removeWhere((element) => element.id == id);
-    setState(() {});
-  }
-
-  void addNewData(String weight) {
-    // ignore: unnecessary_null_comparison
-    if (widget == null) return;
-
-    double weightNumber = double.parse(weight);
-    DataModel newData = DataModel(
-      code: "${_data.length + 1}",
-      time: DateTime.now(),
-      weight: weightNumber,
-      id: "${_data.length + 1}${DateTime.now()}$weightNumber",
-    );
-    setState(() {
-      _data.add(newData);
-    });
-  }
-
-  void modifyData(String id, String weight) {
-    double weightNumber = double.parse(weight);
-    for (int i = 0; i < _data.length; i++) {
-      if (_data[i].id == id) {
-        setState(() {
-          _data[i].weight = weightNumber;
-        });
-        break;
-      }
-    }
-  }
-
-  void _startAddNew(BuildContext ctx, bool modify, String id) {
-    showModalBottomSheet(
-      context: ctx,
-      builder: (_) {
-        return NewDataPage(
-          modify: modify,
-          addNewData: addNewData,
-          modifyData: modifyData,
-          id: id,
-        );
-      },
-    );
-  }
   // void addNewData(void){
   //   setState(() {
 
@@ -126,79 +96,16 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Warehouse"),
-          actions: [
-            IconButton(
-              onPressed: () => _startAddNew(context, false, "1"),
-              icon: const Icon(Icons.add),
+      routes: <String, WidgetBuilder>{
+        HomePageScreen.routePath: (context) => HomePageScreen(
+              addNewData: addNewData,
+              data: _data,
             ),
-          ],
-        ),
-        body: ListView.builder(
-          itemCount: _data.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text("${index + 1}"),
-                  Column(
-                    children: [
-                      Text(
-                        "Code",
-                        style: Theme.of(context).textTheme.bodyText2,
-                      ),
-                      Text(
-                        _data[index].code,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        "weight",
-                        style: Theme.of(context).textTheme.bodyText2,
-                      ),
-                      Text(
-                        "${_data[index].weight} Kg",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        "date",
-                        style: Theme.of(context).textTheme.bodyText2,
-                      ),
-                      Text(
-                        DateFormat.yMd().format(_data[index].time),
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    onPressed: () =>
-                        _startAddNew(context, true, _data[index].id),
-                    icon: const Icon(Icons.edit),
-                  ),
-                  IconButton(
-                    onPressed: () => _deleteData(_data[index].id),
-                    icon: const Icon(Icons.delete),
-                  )
-                ],
-              ),
-            );
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _startAddNew(context, false, "1"),
-          child: const Icon(Icons.add),
-        ),
-      ),
+        SecondPageScreen.routePath: (context) => SecondPageScreen(
+              data: _data,
+              addNewData: addNewData,
+            )
+      },
     );
   }
 }
