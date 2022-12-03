@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
 import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 // import 'package:open_file/open_file.dart';
 
 import 'package:intl/intl.dart';
@@ -39,8 +40,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
     workBook.dispose();
 
     // const String path = '/storage/emulated/0/app';
-    String path = (await getApplicationDocumentsDirectory()).path;
-    final String fileName = '$path/test.xlsx';
+    Directory? directoryVar = (await getExternalStorageDirectory());
+    String path = directoryVar!.path;
+    final String fileName =
+        '$path/${DateFormat('H-m-s').format(DateTime.now())}.xlsx';
+    print(fileName);
     final File file = File(fileName);
     await file.writeAsBytes(bytes, flush: true);
     // OpenFile.open(fileName);
