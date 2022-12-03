@@ -21,7 +21,7 @@ class NewDataPage extends StatefulWidget {
 }
 
 class _NewDataState extends State<NewDataPage> {
-  TextEditingController _weightTextFieldController = TextEditingController();
+  final TextEditingController _weightTextFieldController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Typing(
@@ -59,15 +59,6 @@ class _TypingState extends State<Typing> {
             keyboardType: TextInputType.number,
             controller: widget._weightTextFieldController,
             decoration: const InputDecoration(helperText: "weight"),
-          ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-              });
-            },
-            icon: Icon(
-              Icons.camera_alt_rounded,
-            ),
           ),
           TextButton(
             onPressed: () {

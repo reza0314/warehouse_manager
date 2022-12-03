@@ -7,6 +7,7 @@ import './models/data_model.dart';
 import './screens/home_page_screen.dart';
 import './screens/second_page_screen.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();

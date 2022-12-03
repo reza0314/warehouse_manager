@@ -1,7 +1,12 @@
-import 'package:flutter/material.dart';
-import '../models/data_model.dart';
-import 'package:intl/intl.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Row;
+import 'package:path_provider/path_provider.dart';
+// import 'package:open_file/open_file.dart';
+
+import 'package:intl/intl.dart';
+import '../models/data_model.dart';
 import './add_new_data.dart';
 import './second_page_screen.dart';
 
@@ -20,6 +25,25 @@ class _HomePageScreenState extends State<HomePageScreen> {
   void _deleteData(String id) {
     widget.data.removeWhere((element) => element.id == id);
     setState(() {});
+  }
+
+  Future<void> createExel() async {
+    final Workbook workBook = Workbook();
+    final Worksheet sheet = workBook.worksheets[0];
+    for (int i = 1; i <= widget.data.length; i++) {
+      sheet.getRangeByName('A$i').setText(widget.data[i - 1].code);
+      sheet.getRangeByName('B$i').setText(widget.data[i - 1].weight.toString());
+      sheet.getRangeByName('C$i').setText(widget.data[i - 1].time.toString());
+    }
+    final List<int> bytes = workBook.saveAsStream();
+    workBook.dispose();
+
+    // const String path = '/storage/emulated/0/app';
+    String path = (await getApplicationDocumentsDirectory()).path;
+    final String fileName = '$path/test.xlsx';
+    final File file = File(fileName);
+    await file.writeAsBytes(bytes, flush: true);
+    // OpenFile.open(fileName);
   }
 
   void modifyData(String id, String weight) {
@@ -55,7 +79,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         title: const Text("Warehouse"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => createExel(),
             icon: const Icon(Icons.download),
           ),
         ],
